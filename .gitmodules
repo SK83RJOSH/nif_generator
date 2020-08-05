@@ -1,0 +1,6 @@
+[submodule "jinja2"]
+	path = jinja2
+	url = https://github.com/pallets/jinja.git
+[submodule "nifxml"]
+	path = nifxml
+	url = https://github.com/niftools/nifxml.git

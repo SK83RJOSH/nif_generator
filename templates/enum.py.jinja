@@ -1,0 +1,17 @@
+from enum import IntEnum
+
+
+class {{ enum.attrib.name }}(IntEnum, {{ enum.attrib.storage | to_common_type }}):
+    """{{ enum.text | escape_backslashes | trim }}"""
+
+    def __new__(cls, value, doc=None):
+        self = super().__new__(cls, value)
+        self._value_ = value
+
+        if doc is not None:
+            self.__doc__ = doc
+
+        return self
+{% for option in enum.iter('option') %}
+    {{ option.attrib.name | enum_name }} = {{ option.attrib.value | hex_string }}, "{{ option.text | escape_backslashes | trim }}"
+{%- endfor %}

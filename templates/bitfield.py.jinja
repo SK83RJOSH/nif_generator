@@ -1,0 +1,14 @@
+class {{ bitfield.attrib.name }}({{ bitfield.attrib.storage | to_common_type }}):
+    """{{ bitfield.text | escape_backslashes | trim }}"""
+{% for member in bitfield.iter('member') %}
+    @property
+    def {{ member.attrib.name | field_name }}(self) -> {{ member.attrib.type}}:
+    {%- if member.text %}
+        """{{ member.text | escape_backslashes | trim }}"""
+    {%- endif %}
+        return self._value & {{ member.attrib.mask }} << {{ member.attrib.pos }}
+
+    @{{ member.attrib.name | field_name }}.setter
+    def {{ member.attrib.name | field_name }}(self, value: {{ member.attrib.type }}):
+        self._value |= value >> {{ member.attrib.pos }} & {{ member.attrib.mask }}
+{% endfor -%}
