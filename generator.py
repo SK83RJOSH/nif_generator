@@ -19,7 +19,7 @@ env.filters["to_common_type"] = filters.to_common_type
 def write_file(filename: str, contents: str):
     dir = os.path.dirname(filename)
     if not os.path.exists(dir):
-        os.mkdir(dir)
+        os.makedirs(dir)
     with open(filename, 'w', encoding='utf-8') as file:
         file.write(contents)
 
