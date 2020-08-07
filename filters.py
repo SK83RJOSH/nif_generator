@@ -37,30 +37,42 @@ def field_name(text: str) -> str:
     return text
 
 
-def to_common_type(type: str) -> str:
+def to_basic_type(type: str) -> str:
     # Temporary, these would likely be patched via a preprocessor
     if type is not None:
         if type == 'ulittle32':
-            return 'pyffi.object_models.common.ULittle32'
+            return 'basics.ulittle32'
         if type == 'int':
-            return 'pyffi.object_models.common.Int'
+            return 'basics.int'
         if type == 'uint':
-            return 'pyffi.object_models.common.UInt'
+            return 'basics.uint'
+        if type == 'uint64':
+            return 'basics.int64'
+        if type == 'uint':
+            return 'basics.uint64'
         if type == 'byte':
-            return 'pyffi.object_models.common.UByte'
+            return 'basics.byte'
         if type == 'char':
-            return 'pyffi.object_models.common.Char'
+            return 'basics.char'
         if type == 'short':
-            return 'pyffi.object_models.common.Short'
+            return 'basics.short'
         if type == 'ushort':
-            return 'pyffi.object_models.common.UShort'
+            return 'basics.ushort'
         if type == 'float':
-            return 'pyffi.object_models.common.Float'
+            return 'basics.float'
         if type == 'BlockTypeIndex':
-            return 'pyffi.object_models.common.UShort'
+            return 'basics.BlockTypeIndex'
         if type == 'StringIndex':
-            return 'pyffi.object_models.common.UInt'
-        if type == 'SizedString':
-            return 'pyffi.object_models.common.SizedString'
+            return 'basics.StringIndex'
+        if type == 'StringOffset':
+            return 'basics.StringOffset'
+        if type == 'FileVersion':
+            return 'basics.FileVersion'
+        if type == 'NiFixedString':
+            return 'basics.NiFixedString'
+        if type == 'Ref':
+            return 'basics.Ref'
+        if type == 'Ptr':
+            return 'basics.Ptr'
 
     return type

@@ -1,0 +1,6 @@
+class {{ basic.attrib.name }}():
+    """{{ basic.text | escape_backslashes | trim }}"""
+
+    _min = {{ min }}  # Minimum value
+    _max = {{ max }}  # Maximum value
+    _size = {{ basic.attrib.size }}  # Size in bytes

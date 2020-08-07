@@ -1,7 +1,8 @@
 from enum import IntEnum
+from output import basics
 
 
-class {{ enum.attrib.name }}(IntEnum, {{ enum.attrib.storage | to_common_type }}):
+class {{ enum.attrib.name }}({{ enum.attrib.storage | to_basic_type }}, IntEnum):
     """{{ enum.text | escape_backslashes | trim }}"""
 
     def __new__(cls, value, doc=None):

@@ -1,7 +1,8 @@
 from enum import IntFlag
+from output import basics
 
 
-class {{ bitflags.attrib.name }}(IntFlag, {{ bitflags.attrib.storage | to_common_type }}):
+class {{ bitflags.attrib.name }}({{ bitflags.attrib.storage | to_basic_type }}, IntFlag):
     """{{ bitflags.text | escape_backslashes | trim }}"""
 
     def __new__(cls, value, doc=None):
