@@ -1,7 +1,3 @@
 {% for class in classes -%}
-from . import {{ class }}
-{% endfor %}
-
-{% for class in classes -%}
-{{ class }} is {{ class }}.{{ class }}
+from .{{ class }} import {{ class }}
 {% endfor -%}
