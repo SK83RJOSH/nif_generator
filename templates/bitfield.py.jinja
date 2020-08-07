@@ -1,7 +1,7 @@
 from output import basics
 
 
-class {{ bitfield.attrib.name }}({{ bitfield.attrib.storage | to_basic_type }}):
+class {{ bitfield.attrib.name }}({{ bitfield.attrib.storage | to_basic_type }}, int):
     """{{ bitfield.text | escape_backslashes | trim }}"""
 {% for member in bitfield.iter('member') %}
     @property
