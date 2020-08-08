@@ -11,6 +11,7 @@ from distutils.dir_util import copy_tree
 from typing import Dict, List
 from jinja2 import Environment, PackageLoader
 from xml.etree import ElementTree
+from html import unescape
 
 import naming_conventions as convention
 
@@ -235,11 +236,15 @@ class XmlParser:
         # list of all classes that have to be imported
         imports = []
 
+        # lookup members
+        local_lower_lookup = {}
+
         field_unions_dict = collections.OrderedDict()
         for field in struct:
             field_attrs = self.replace_tokens(field.attrib)
             if field.tag in ("add", "field"):
                 field_name = convention.name_attribute(field_attrs["name"])
+                local_lower_lookup[field_attrs["name"]] = "self."+field_name
                 if field_name not in field_unions_dict:
                     field_unions_dict[field_name] = []
                 else:
@@ -328,19 +333,41 @@ class XmlParser:
                         # todo - decide if basic or compound
                         # assume compound
 
-                        # todo - parse vercond globals with convention.name_attribute()
-                        field_vercond = field_attrs.get("vercond")
-                        if field_vercond:
-                            f.write(f"\n\t\tif {field_vercond}:")
-                            f.write(f"\n\t\t\tself.{field_name} = {field_type}().{method_type}(stream)")
-                        else:
-                            f.write(f"\n\t\tself.{field_name} = {field_type}().{method_type}(stream)")
+                        for att in ("cond", "vercond", "arr1", "arr2"):
+                            if att in field_attrs:
+                                val = field_attrs[att]
+                                for k, v in local_lower_lookup.items():
+                                    val = val.replace(k, v)
+                                field_attrs[att] = val
 
-                    # todo - handle arrays
-                    # self.relative_targets = stream.read_ubyte()
-                    # self.targets = [NiMorphDataMorphTarget() for _ in range(num_targets)]
-                    # for item in self.targets:
-                    #     item.load(stream, num_vertices)
+                        conditionals = []
+                        ver1 = field_attrs.get("ver1")
+                        ver2 = field_attrs.get("ver2")
+                        vercond = field_attrs.get("vercond")
+                        cond = field_attrs.get("cond")
+                        if ver1:
+                            conditionals.append(f"(version < {ver1})")
+                        if ver2:
+                            conditionals.append(f"(version < {ver2})")
+                        if vercond:
+                            conditionals.append(f"({vercond})")
+                        if cond:
+                            conditionals.append(f"({cond})")
+                        if conditionals:
+                            f.write(f"\n\t\tif {' and '.join(conditionals)}:")
+                            indent = "\n\t\t\t"
+                        else:
+                            indent = "\n\t\t"
+                        arr1 = field_attrs.get("arr1")
+                        arr2 = field_attrs.get("arr2")
+                        if arr1:
+                            # todo - handle array 2
+                            f.write(f"{indent}self.{field_name} = [{field_type}() for _ in range({arr1})]")
+                            f.write(f"{indent}for item in self.{field_name}:")
+                            f.write(f"{indent}\titem.{method_type}(stream)")
+
+                        else:
+                            f.write(f"{indent}self.{field_name} = {field_type}().{method_type}(stream)")
 
 
                     # # not found in current nifxml
@@ -411,9 +438,9 @@ class XmlParser:
                     expr_str = attr_dict[target_attrib]
                     for op_token, op_str in tokens:
                         expr_str = expr_str.replace(op_token, op_str)
-                    attr_dict[target_attrib] = expr_str
+                    attr_dict[target_attrib] = unescape(expr_str)
         # additional tokens that are not specified by nif.xml
-        fixed_tokens = (("User Version", "user_version"), ("BS Header\\BS Version", "bs_header\\bs_version"), ("Version", "version"), ("\\", "."), ("&gt;", ">"), ("&lt;", "<"), ("&amp;", "&"), ("#ARG#", "ARG"), ("#T#", "TEMPLATE") )
+        fixed_tokens = (("User Version", "user_version"), ("BS Header\\BS Version", "bs_header\\bs_version"), ("Version", "version"), ("\\", "."), ("#ARG#", "ARG"), ("#T#", "TEMPLATE") )
         for attrib, expr_str in attr_dict.items():
             for op_token, op_str in fixed_tokens:
                 expr_str = expr_str.replace(op_token, op_str)
