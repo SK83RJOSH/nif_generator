@@ -94,4 +94,4 @@ def write_templates():
     copy_tree('source', 'output')
 
 
-write_templates()
+# write_templates()
