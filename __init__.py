@@ -370,15 +370,6 @@ class XmlParser:
                             f.write(f"{indent}self.{field_name} = {field_type}().{method_type}(stream)")
 
 
-                    # # not found in current nifxml
-                    # elif field.tag == "version":
-                    #     # set the version string
-                    #     self.version_string = attrs["num"]
-                    #     self.cls.versions[self.version_string] = self.cls.version_number(self.version_string)
-                    #     self.update_gamesdict(self.class_dict["_games"], field.text)
-                    # else:
-                    #     print("only add and version tags allowed in struct declaration")
-
     def write_bitflags(self, element: ElementTree.Element):
         class_name = convention.name_class(element.attrib['name'])
         out_file = os.path.join(os.getcwd(), "generated", self.path_dict[class_name]+".py")
