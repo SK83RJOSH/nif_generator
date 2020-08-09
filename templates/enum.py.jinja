@@ -4,15 +4,9 @@ from output import basics
 
 class {{ enum.attrib.name }}({{ enum.attrib.storage | to_basic_type }}, IntEnum):
     """{{ enum.text | escape_backslashes | trim }}"""
-
-    def __new__(cls, value, doc=None):
-        self = super().__new__(cls, value)
-        self._value_ = value
-
-        if doc is not None:
-            self.__doc__ = doc
-
-        return self
 {% for option in enum.iter('option') %}
-    {{ option.attrib.name | enum_name }} = {{ option.attrib.value | hex_string }}, "{{ option.text | escape_backslashes | trim }}"
+    {%- if option.text %}
+    # {{ option.text | escape_backslashes | trim }}
+    {%- endif %}
+    {{ option.attrib.name | enum_name }} = {{ option.attrib.value }}
 {%- endfor %}
